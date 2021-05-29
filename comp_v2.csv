@@ -1,10 +1,10 @@
-comp_id,comp_name
-c001,Axia
-c002,Courage Fitness
-c003,Island Hospital
-c004,Pantai Hospital
-c005,Gleaneagle Hospital
-c006,Berjaya Fitness
-c007,Kingdom Fitness
-c008,Muscle Fitness
-c009,LGL Hospital
+comp_id,comp_name,industry,region
+c001,Axia,Telecommunication,Nepal
+c002,Courage Fitness,Fitness,Thailand
+c003,Island Hospital,Heatlhcare,Malaysia
+c004,Saputo Inc.,Food,Canada
+c005,Gleaneagle Hospital,Heatlhcare,Malaysia
+c006,Berjaya Fitness,Fitness,Thailand
+c007,Digi,Telecommunication,Malaysia
+c008,Singtel,Telecommunication,Singapore
+c009,Kelloggs',Food,USA
