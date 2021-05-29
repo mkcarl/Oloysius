@@ -1,0 +1,43 @@
+###load data from csv to neo4j and create relationship###
+
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/mkcarl/Oloysius/main/data/company.csv' AS row
+MERGE (company:Company {compID: row.comp_id})
+	ON CREATE SET company.CompanyName = row.comp_name,company.Industry = row.industry,company.Region = row.region;
+
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/mkcarl/Oloysius/main/data/skill.csv' AS row
+MERGE (s:Skill {skillID: row.skill_id})
+    ON CREATE SET s.skill = row.skill;
+
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/mkcarl/Oloysius/main/data/emp.csv' AS row
+MERGE (emp:Employee {empID: row.emp_id})
+	ON CREATE SET emp.EmployeeName = row.emp_name
+WITH emp, row
+UNWIND split(row.skill_id,':') AS skill_id
+MERGE (s:Skill {skillID: skill_id})
+MERGE (emp)-[p:POSSESS]->(s);
+
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/mkcarl/Oloysius/main/data/project.csv' AS row
+MERGE (proj:Project {projectID: row.project_id})
+    ON CREATE SET proj.ProjectName = row.project_name
+WITH proj, row
+UNWIND split(row.emp_id,':') AS emp_id
+MERGE (emp:Employee {empID: emp_id})
+MERGE (emp)-[i:INVOLVE_IN]->(proj)
+WITH proj, row
+UNWIND split(row.skill_id,':') AS skill_id
+MERGE (s:Skill {skillID: skill_id})
+MERGE (proj)-[r:REQUIRES]->(s);
+	
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/mkcarl/Oloysius/main/data/project.csv' AS row
+MATCH (c:Company {compID: row.comp_id})
+MATCH (p:Project {projectID: row.project_id})
+MERGE (c)-[:ORGANISE]->(p)
+
+
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/mkcarl/Oloysius/main/data/project.csv' AS row
+MATCH (p:Project {projectID: row.project_id})
+MATCH (e:Employee {empID: row.leader_id})
+MERGE (p)-[:LEAD_BY]->(e)
+
+
+
