@@ -2,3 +2,4 @@ Dockerfile
 test_db.ipynb
 test_db.py
 .vscode
+*.__pycache__

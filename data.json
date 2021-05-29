@@ -1,0 +1,109 @@
+{
+    "responseId": "360abbaa-9fd9-40d7-b28b-4662066dfde8-9779ea79",
+    "queryResult": {
+        "queryText": "experience with Java",
+        "speechRecognitionConfidence": 0.69263387,
+        "parameters": {
+            "Skill": "Java"
+        },
+        "allRequiredParamsPresent": true,
+        "fulfillmentText": "No. We don't have any project experience with the skill/framework entered.",
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": [
+                        "No. We don't have any project experience with the skill/framework entered."
+                    ]
+                }
+            }
+        ],
+        "outputContexts": [
+            {
+                "name": "projects/crafthack-data-challenge-2/agent/sessions/4486c517-6449-6b56-9da5-425ca41fa788/contexts/no",
+                "lifespanCount": 9,
+                "parameters": {
+                    "trigger": [
+                        "know"
+                    ],
+                    "trigger.original": [
+                        "knows"
+                    ],
+                    "skills": [
+                        "Python"
+                    ],
+                    "skills.original": [
+                        "python"
+                    ],
+                    "Skill": "Java",
+                    "Skill.original": "Java"
+                }
+            },
+            {
+                "name": "projects/crafthack-data-challenge-2/agent/sessions/4486c517-6449-6b56-9da5-425ca41fa788/contexts/yes",
+                "lifespanCount": 9,
+                "parameters": {
+                    "trigger": [
+                        "know"
+                    ],
+                    "trigger.original": [
+                        "knows"
+                    ],
+                    "skills": [
+                        "Python"
+                    ],
+                    "skills.original": [
+                        "python"
+                    ],
+                    "Skill": "Java",
+                    "Skill.original": "Java"
+                }
+            },
+            {
+                "name": "projects/crafthack-data-challenge-2/agent/sessions/4486c517-6449-6b56-9da5-425ca41fa788/contexts/askforskill",
+                "lifespanCount": 9,
+                "parameters": {
+                    "trigger": [
+                        "know"
+                    ],
+                    "trigger.original": [
+                        "knows"
+                    ],
+                    "skills": [
+                        "Python"
+                    ],
+                    "skills.original": [
+                        "python"
+                    ],
+                    "Skill": "Java",
+                    "Skill.original": "Java"
+                }
+            },
+            {
+                "name": "projects/crafthack-data-challenge-2/agent/sessions/4486c517-6449-6b56-9da5-425ca41fa788/contexts/__system_counters__",
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0,
+                    "Skill": "Java",
+                    "Skill.original": "Java"
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/crafthack-data-challenge-2/agent/intents/d43a0dc1-1f63-4a9b-aefd-21ec9b2f52f8",
+            "displayName": "ProjectExperience"
+        },
+        "intentDetectionConfidence": 0.8143072,
+        "languageCode": "en",
+        "sentimentAnalysisResult": {
+            "queryTextSentiment": {
+                "score": -0.1,
+                "magnitude": 0.1
+            }
+        }
+    },
+    "originalDetectIntentRequest": {
+        "source": "DIALOGFLOW_CONSOLE",
+        "payload": {}
+    },
+    "session": "projects/crafthack-data-challenge-2/agent/sessions/4486c517-6449-6b56-9da5-425ca41fa788"
+}
