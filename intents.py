@@ -1,6 +1,6 @@
 import random 
 import json 
-from py2neo import Graph, cypher
+from py2neo import Graph, Node, Relationship, cypher
 
 
 graph = Graph(
@@ -26,7 +26,7 @@ def return_fulfillment(data):
         ]
     elif intent == "ProjectSkill": 
         # Have we worked with python before?
-        skill_name = data["queryResult"]["parameters"]["Skill"]
+        skill_name = data["queryResult"]["parameters"]["Skill"][0]
         cypher_query = f"MATCH (proj:Project)-[:REQUIRES]->(sk:Skill) WHERE sk.skill =~ '(?i){skill_name}' return (proj)"
         all_project = graph.run(cypher_query).data()
         project = random.choice(all_project)['proj']
@@ -38,12 +38,12 @@ def return_fulfillment(data):
     elif intent == "CompanyPeople.Lead": 
         # who was the tech lead in our last project with singtel
         company_name = data["queryResult"]["parameters"]["company"]
-        cypher_query = f"MATCH (comp:Company)-[:ORGANISE]->(proj:Project)-[:LEAD_BY]->(emp:Employee) WHERE comp.CompanyName =~ '(?i){company_name}' RETURN (emp)"
-        all_employee = graph.run(cypher_query).data()
-        employee = random.choice(all_employee)["emp"]
+        cypher_query = f"MATCH (comp:Company)-[:ORGANISE]->(proj:Project)-[:LEAD_BY]->(emp:Employee) WHERE comp.CompanyName =~ '(?i){company_name}' RETURN emp, proj"
+        all_employee_project = graph.run(cypher_query).data()
+        employee_project = random.choice(all_employee_project)
         choices = [
-            f"The tech lead of {company_name} is {employee['EmployeeName']}", 
-            f"{employee['EmployeeName']} leaded the project {company_name}"
+            f"The tech lead of {employee_project['proj']['ProjectName']} is {employee_project['emp']['EmployeeName']}", 
+            f"{employee_project['emp']['EmployeeName']} leaded the project {employee_project['proj']['ProjectName']}"
         ]
     elif intent == "Company.Industry": 
         # were we involved in the healthcare industry? 
@@ -71,13 +71,115 @@ def return_fulfillment(data):
         cypher_query = f"MATCH (proj:Project)-[:REQUIRES]->(sk:Skill) WHERE proj.ProjectName =~ '(?i){project_name}' RETURN (sk)"
         all_skill = graph.run(cypher_query).data()
         all_skill_list = [skill["sk"]['skill'] for skill in all_skill]
-        choices = [
-            f"The skills required in {project_name} is {', '.join(all_skill_list)}"
-        ]
+        if all_skill_list: 
+            choices = [
+                f"The skills required in {project_name} is {', '.join(all_skill_list)}"
+            ]
+        else: 
+            return data
+    elif intent == "help": 
+        # if the user needs help 
+        query_examples = [
+            "Who knows java?",  
+            "What projects did we do in the past involved C?",  
+            "Do you know who is the tech lead of our las project with Singtel?",  
+            "What is used in Berjaya Fitness System?", 
+            "Did we had any affiliations with a company in Thailand?"
+        ]    
+
+        final_output =  f"These are some examples of what you can do : "\
+                        f"\n - {random.choice(query_examples)}"\
+                        f"\n - {random.choice(query_examples)}"\
+                        f"\n - {random.choice(query_examples)}"\
+        
+        choices = [final_output]
+    elif intent == "NewData.Project": 
+        new_project_name = ""
+        cypher_query = f"MATCH ()"
+
+    elif intent == "NewData.Company": 
+        new_company_name = data["queryResult"]["parameters"]["compName"]
+        new_company_industry = data["queryResult"]["parameters"]["industry"]
+        new_company_region  = data["queryResult"]["parameters"]["region"]["country"]
+        cypher_query_check = f"MATCH (c:Company) WHERE c.CompanyName =~ '(?i){new_company_name}' RETURN c"
+        exist = len(list(graph.run(cypher_query_check))) > 1
+        
+        if not exist: 
+            cypher_query = f"MERGE (c:Company {{compName: '{new_company_name}', industry: '{new_company_industry}', region: '{new_company_region}'}})"
+            graph.run(cypher_query)
+            choices = [
+                "Created new company entry!", 
+                f"Success! {new_company_name} created."
+            ]
+        else: 
+            choices = [
+                "This entry already exist."
+            ]
+    elif intent == "NewData.Skill":
+        new_skill = data["queryResult"]["parameters"]["skill"]
+        cypher_query_check = f"MATCH (s:Skill) WHERE s.skill =~ '(?i){new_skill}' RETURN s"
+        exist = len(list(graph.run(cypher_query_check))) > 0 
+
+        if not exist: 
+            cypher_query = f"MERGE (s:Skill {{skill: '{new_skill}'}})"
+            graph.run(cypher_query)
+            choices = [
+                f"{new_skill} have been added!", 
+                f"New skill acquired!", 
+                f"Mastery level increase!"
+            ]
+        else: 
+            choices = [
+                f"Skill already exist!", 
+                f"Existing skills cannot be added again. :("
+            ] 
+    elif intent == "NewData.Employee": 
+        first_name = data["queryResult"]["parameters"]["emp_fame"]
+        last_name = data["queryResult"]["parameters"]["emp_lname"]
+        new_employee_name = f"{first_name} {last_name}"
+        cypher_query_check = f"MATCH (e:Employee) WHERE e.EmployeeName =~ '(?i){new_employee_name}' RETURN e"
+        exist = len(list(graph.run(cypher_query_check))) > 0
+
+        if not exist: 
+            cypher_query = f"CREATE (e:Employee {{ EmployeeName: '{new_employee_name}' }})"
+            graph.run(cypher_query)
+            choices = [
+                f"{new_employee_name} has joined your party!", 
+                f"You've got a new character! Welcome {new_employee_name} to the party!"
+            ]
+        else: 
+            choices = [
+                f"Warning! {new_employee_name} is already in the party!", 
+                f"Employee was already in the team..."
+            ]
+    elif intent == "testCardResponse": 
+        custom_card = {
+                        "fulfillmentMessages": [
+                            {
+                            "card": {
+                                "title": "LMAO card",
+                                "subtitle": "ayeee",
+                                "imageUri": "https://cdn.discordapp.com/attachments/846742521983664128/848250432127893565/unknown.png",
+                                "buttons": [
+                                {
+                                    "text": "button text",
+                                    "postback": "https://example.com/path/for/end-user/to/follow"
+                                }
+                                ]
+                            }
+                            }
+                        ]
+                        }
+        return json.dumps(custom_card)
+    else: 
+        return data
+    
 
     if choices: 
-        data = {
+        output = {
             'fulfillmentText' : random.choice(choices), 
             'source' : 'webhookdata'
         }
-        return json.dumps(data)
+        return json.dumps(output)
+
+# TODO : ProjectPeople.Lead intent 
