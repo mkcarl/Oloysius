@@ -1,10 +1,10 @@
-project_id,project_name,comp_id,emp_id
-p001,Axia Management System,c001,e001
-p002,Courage Fitness Management System,c002,e002
-p003,Island Hospital Web,c003,e003
-p004,Pantai Hospital booking system,c004,e004
-p005,Gleaneagle Hospital management system,c005,e005
-p006,Berjaya Fitness booking system,c006,e006
-p007,Kingdom Fitness booking system,c007,e007
-p008,Muscle Fitness management system,c008,e008
-p009,LGL Hospital management system,c009,e009
+project_id,project_name,comp_id,leader_id,emp_id,skill_id
+p001,Axia Management System,c001,e001,e002:e005,sk01:sk02
+p002,Courage Fitness Management System,c002,e002,e001,sk02
+p003,Island Hospital Web,c003,e003,e001:e007,sk03:sk07
+p004,Pantai Hospital booking system,c004,e004,e007:e008,sk04:sk08
+p005,Gleaneagle Hospital management system,c005,e005,e006:e009,sk07:sk09
+p006,Berjaya Fitness booking system,c006,e006,e002:e004,sk06:sk03
+p007,Kingdom Fitness booking system,c007,e007,e001:e004,sk01:sk07
+p008,Muscle Fitness management system,c008,e008,e002:e003,sk03:sk08
+p009,LGL Hospital management system,c009,e009,e003,sk03
