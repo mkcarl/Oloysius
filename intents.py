@@ -100,7 +100,7 @@ def return_fulfillment(data):
         ]  
         new_data_examples = [
             "Add employee name John Cena", # works 
-            "Project CNNB by Big Show is lead by GotLightE", 
+            "This new project Nestle Grains Management System from Nestle is lead by John Ceasser", 
             "Add new skill Java", # works
             "Make new data for Philip's in Electronics industry in Netherlands" # works
         ]  
