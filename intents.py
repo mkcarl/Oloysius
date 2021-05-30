@@ -135,32 +135,40 @@ def return_fulfillment(data):
         names_tuple = list(zip(*names_matrix))
         names = list(f"{name[0]} {name[1]}" for name in names_tuple)
         
-        cypher_query = f"CREATE (p:Project {{ ProjectName: '{temp['project_name']}' }}) "\
-                        f"WITH p "\
-                        f"MATCH (e:Employee) "\
-                        f"WHERE (e.EmployeeName =~ '{temp['leader_name']}') "\
-                        f"MERGE (p)-[l:LEADS_BY]->(e) "\
-                        f""\
-                        f"WITH p MATCH (c:Company) "\
-                        f"WHERE (c.CompanyName =~ '{temp['company_name']}') "\
-                        f"MERGE (c)-[o:ORGANISE]->(p) "\
-                        f""\
-                        f"CREATE (n:N {{skill:'{','.join(skills)}'}}) "\
-                        f"WITH n "\
-                        f"MATCH (p:Project {{ProjectName:'{temp['project_name']}'}}) "\
-                        f"UNWIND split(n.skill, ',') AS SKILL "\
-                        f"MERGE (s:Skill {{skill: SKILL}}) "\
-                        f"MERGE (p)-[r:REQUIRES]->(s) "\
-                        f""\
-                        f"CREATE (m:M {{emp:'{','.join(names)}'}}) "\
-                        f"WITH m "\
-                        f"MATCH (p:Project {{ProjectName:'{temp['project_name']}'}}) "\
-                        f"UNWIND split(m.emp, ',') AS EMP "\
-                        f"MERGE (e:Employee {{EmployeeName: EMP}}) "\
-                        f"MERGE (e)-[i:INVOLVE_IN]->(p) "\
-                        f"DELETE n, m"
-        
-        graph.run(cypher_query)
+        # cypher_query = f"CREATE (p:Project {{ ProjectName: '{temp['project_name']}' }}) "\
+        #                 f"WITH p "\
+        #                 f"MATCH (e:Employee) "\
+        #                 f"WHERE (e.EmployeeName =~ '{temp['leader_name']}') "\
+        #                 f"MERGE (p)-[l:LEADS_BY]->(e) "\
+        #                 f""\
+        #                 f"WITH p MATCH (c:Company) "\
+        #                 f"WHERE (c.CompanyName =~ '{temp['company_name']}') "\
+        #                 f"MERGE (c)-[o:ORGANISE]->(p) "\
+        #                 f""\
+        #                 f"CREATE (n:N {{skill:'{','.join(skills)}'}}) "\
+        #                 f"WITH n "\
+        #                 f"MATCH (p:Project {{ProjectName:'{temp['project_name']}'}}) "\
+        #                 f"UNWIND split(n.skill, ',') AS SKILL "\
+        #                 f"MERGE (s:Skill {{skill: SKILL}}) "\
+        #                 f"MERGE (p)-[r:REQUIRES]->(s) "\
+        #                 f""\
+        #                 f"CREATE (m:M {{emp:'{','.join(names)}'}}) "\
+        #                 f"WITH m "\
+        #                 f"MATCH (p:Project {{ProjectName:'{temp['project_name']}'}}) "\
+        #                 f"UNWIND split(m.emp, ',') AS EMP "\
+        #                 f"MERGE (e:Employee {{EmployeeName: EMP}}) "\
+        #                 f"MERGE (e)-[i:INVOLVE_IN]->(p) "\
+        #                 f"DELETE n, m"
+        cyphers = []
+        cyphers.append(f"create (p:Project {{ProjectName: '{temp['project_name']}'}});")
+        cyphers.append(f"match (c:Company), (p:Project) where c.CompanyName =~ '(?i){temp['company_name']}' AND p.ProjectName =~ '(?i){temp['project_name']}' merge (c)-[:ORGANISE]->(p);")
+        cyphers.append(f"match (l:Employee), (p:Project) where l.EmployeeName =~ '(?i){temp['leader_name']}' AND p.ProjectName =~ '(?i){temp['project_name']}' merge (p)-[:LEAD_BY]->(l);")
+        for name in names: 
+            cyphers.append(f"match (e:Employee), (p:Project) where e.EmployeeName =~ '(?i){name}' AND p.ProjectName =~ '(?i){temp['project_name']}' merge (e)-[:INVOLVE_IN]->(p);")
+        for skill in skills: 
+            cyphers.append(f"match (s:Skill), (p:Project) where s.skill =~ '(?i){skill}' AND p.ProjectName =~ '(?i){temp['project_name']}' merge (p)-[:REQUIRES]->(s);")
+        for cy in cyphers:
+            graph.run(cy)
 
         output = [
             "Success!"
