@@ -211,14 +211,19 @@ def return_fulfillment(data):
         exist = len(list(graph.run(cypher_query_check))) > 0
 
         if not exist: 
-            cypher_query = f"CREATE (e:Employee {{EmployeeName:'{new_employee_name}'}}) "\
-                            f"CREATE (n:N {{skill:'{','.join(skills)}'}}) "\
-                            f"WITH n "\
-                            f"UNWIND split(n.skill, ',') AS SKILL "\
-                            f"MERGE (s:Skill {{skill: SKILL}}) "\
-                            f"MERGE (e)-[:POSSESS]->(s) "\
-                            f"DELETE n"
-            graph.run(cypher_query)
+            # cypher_query = f"CREATE (e:Employee {{EmployeeName:'{new_employee_name}'}}) "\
+            #                 f"CREATE (n:N {{skill:'{','.join(skills)}'}}) "\
+            #                 f"WITH n "\
+            #                 f"UNWIND split(n.skill, ',') AS SKILL "\
+            #                 f"MERGE (s:Skill {{skill: SKILL}}) "\
+            #                 f"MERGE (e)-[:POSSESS]->(s) "\
+            #                 f"DELETE n"
+            cyphers = []
+            cyphers.append(f"merge (e:Employee {{EmployeeName:'{new_employee_name}'}});")
+            for skill in skills: 
+                cyphers.append(f"match (sk:Skill), (ee:Employee) where sk.skill =~ '(?i){skill}' AND ee.EmployeeName =~ '(?i){new_employee_name}' merge (ee)-[:POSSESS]->(sk);")
+            for cy in cyphers: 
+                graph.run(cy)
             choices = [
                 f"{new_employee_name} has joined your party!", 
                 f"You've got a new character! Welcome {new_employee_name} to the party!"
